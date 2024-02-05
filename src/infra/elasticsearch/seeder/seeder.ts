@@ -52,6 +52,14 @@ export class ElasticSearchSeeder {
                     },
                 },
             },
+        }).catch(error => {
+            const errorType = error.meta.body.error.type;
+
+            if (errorType === 'resource_already_exists_exception') {
+                logger.info('[ElasticSeeder] Post index already exists, skipping creation')
+            } else {
+                logger.error(`[ElasticSeeder] Something went wrong while creating post index, code: ${errorType}`)
+            }
         })
     }
 
@@ -70,6 +78,14 @@ export class ElasticSearchSeeder {
                     },
                 },
             },
+        }).catch(error => {
+            const errorType = error.meta.body.error.type;
+
+            if (errorType === 'resource_already_exists_exception') {
+                logger.info('[ElasticSeeder] reader_users index already exists, skipping creation')
+            } else {
+                logger.error(`[ElasticSeeder] Something went wrong while creating reader_users index, code: ${errorType}`)
+            }
         })
     }
 
@@ -88,6 +104,14 @@ export class ElasticSearchSeeder {
                     },
                 },
             },
+        }).catch(error => {
+            const errorType = error.meta.body.error.type;
+
+            if (errorType === 'resource_already_exists_exception') {
+                logger.info('[ElasticSeeder] blogger_users index already exists, skipping creation')
+            } else {
+                logger.error(`[ElasticSeeder] Something went wrong while creating blogger_users index, code: ${errorType}`)
+            }
         })
     }
 
