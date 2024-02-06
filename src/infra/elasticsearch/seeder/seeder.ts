@@ -7,15 +7,40 @@ import { UserService } from '../../../application/user/user.service'
 
 @singleton()
 export class ElasticSearchSeeder {
+    private indices: string[] = [
+        'posts',
+        'reader_users',
+        'blogger_users',
+    ];
+
     constructor(private readonly userService: UserService) {
         this.initialize()
     }
 
     async initialize() {
+        await this.removeExistingIndices()
         await this.createPostIndices()
         await this.createReaderUserIndices()
         await this.createBloggerUserIndices()
         await this.seedUsers()
+    }
+
+    async removeExistingIndices() {
+        for await (const index of this.indices) {
+            logger.info(`[ElasticSeeder] Removing ${index} index if exists...`)
+
+            await client.indices.delete({
+                index,
+            }).catch(error => {
+                const errorType = error.meta.body.error.type;
+
+                if (errorType === 'index_not_found_exception') {
+                    logger.info(`[ElasticSeeder] ${index} index not found, skipping deletion`)
+                } else {
+                    logger.error(`[ElasticSeeder] Something went wrong while deleting ${index} index, code: ${errorType}`)
+                }
+            })
+        }
     }
 
     async createPostIndices() {
